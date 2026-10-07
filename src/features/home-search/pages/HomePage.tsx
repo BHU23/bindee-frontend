@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { AppHeader } from "@/components/common/AppHeader";
+import { FlyBy } from "../components/FlyBy";
 import { HeroSection } from "../components/HeroSection";
 import { HomeFooter } from "../components/HomeFooter";
 import { PopularRoutes } from "../components/PopularRoutes";
@@ -36,6 +37,7 @@ export function HomePage() {
         aria-hidden="true"
         className="fixed inset-0 z-0 bg-linear-to-br from-lilac via-sky to-blush"
       />
+      <FlyBy />
       <div className="relative z-10 flex flex-col gap-10">
         <AppHeader
           right={
