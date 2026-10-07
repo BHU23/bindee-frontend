@@ -2,6 +2,8 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router";
 import { AppHeader } from "@/components/common/AppHeader";
+import { HeroSection } from "../components/HeroSection";
+import { HomeFooter } from "../components/HomeFooter";
 import { PopularRoutes } from "../components/PopularRoutes";
 import { PromotionList } from "../components/PromotionList";
 import { RecentSearches } from "../components/RecentSearches";
@@ -13,7 +15,7 @@ import { useSearchForm } from "../hooks/useSearchForm";
 import { bangkokDay } from "../lib/dates";
 import { RESULTS_PATH } from "../lib/routes";
 
-/** Thin route-level screen: the search form comes first, shortcuts follow. */
+/** Thin route-level screen: hero and search form first, shortcuts and reassurance follow. */
 export function HomePage() {
   const { t } = useTranslation("homeSearch");
   const navigate = useNavigate();
@@ -29,36 +31,56 @@ export function HomePage() {
   const promotions = usePromotions();
 
   return (
-    <div className="flex flex-col gap-8">
-      <AppHeader />
-      <section className="flex flex-col gap-4 rounded-lg bg-linear-to-br from-lilac via-sky to-blush p-4 md:p-8">
-        <div className="flex flex-col gap-1">
-          <h1 className="font-display text-[36px] leading-10 font-semibold break-words text-midnight md:text-[56px] md:leading-[60px]">
-            {t("title")}
-          </h1>
-          <p className="text-slate">{t("subtitle")}</p>
-        </div>
+    <>
+      <div
+        aria-hidden="true"
+        className="fixed inset-0 z-0 bg-linear-to-br from-lilac via-sky to-blush"
+      />
+      <div className="relative z-10 flex flex-col gap-10">
+        <AppHeader
+          right={
+            <nav
+              aria-label={t("nav.flights")}
+              className="flex items-center gap-1"
+            >
+              <span
+                aria-current="page"
+                className="inline-flex h-11 items-center rounded-full bg-midnight px-5 font-display text-[15px] font-semibold text-primary-foreground"
+              >
+                {t("nav.flights")}
+              </span>
+              <a
+                href="#support"
+                className="inline-flex h-11 items-center rounded-full px-5 font-display text-[15px] font-semibold text-foreground outline-none hover:bg-iris-mist focus-visible:ring-3 focus-visible:ring-ring/40"
+              >
+                {t("nav.help")}
+              </a>
+            </nav>
+          }
+        />
+        <HeroSection route={popular.routes[0]} status={popular.status} />
         <SearchForm form={form} today={today} />
-      </section>
-      <RecentSearches
-        searches={recent.searches}
-        isBusy={form.isSubmitting}
-        onSelect={(query) => void form.searchAgain(query)}
-      />
-      <PopularRoutes
-        routes={popular.routes}
-        status={popular.status}
-        onRetry={popular.reload}
-        onSelect={(route) => {
-          form.setField("origin", route.origin);
-          form.setField("destination", route.destination);
-        }}
-      />
-      <PromotionList
-        promotions={promotions.promotions}
-        status={promotions.status}
-        onRetry={promotions.reload}
-      />
-    </div>
+        <RecentSearches
+          searches={recent.searches}
+          isBusy={form.isSubmitting}
+          onSelect={(query) => void form.searchAgain(query)}
+        />
+        <PopularRoutes
+          routes={popular.routes}
+          status={popular.status}
+          onRetry={popular.reload}
+          onSelect={(route) => {
+            form.setField("origin", route.origin);
+            form.setField("destination", route.destination);
+          }}
+        />
+        <PromotionList
+          promotions={promotions.promotions}
+          status={promotions.status}
+          onRetry={promotions.reload}
+        />
+        <HomeFooter />
+      </div>
+    </>
   );
 }

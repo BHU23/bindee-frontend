@@ -12,6 +12,10 @@ export const common = {
     network: "เชื่อมต่อไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตแล้วลองอีกครั้ง",
     unknown: "เกิดข้อผิดพลาด กรุณาลองอีกครั้ง",
   },
+  combobox: {
+    open: "เปิดรายการ",
+    empty: "ไม่พบรายการที่ค้นหา",
+  },
   counter: {
     decrease: "ลด {{label}}",
     increase: "เพิ่ม {{label}}",

@@ -3,12 +3,13 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { formatBaht } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { DOMESTIC_AIRPORTS } from "../../lib/airports";
 import type { PopularRoute } from "../../types/homeSearch";
 import type { PopularRoutesProps } from "./PopularRoutes.types";
 
 const SKELETON_COUNT = 4;
 
-/** The first route is the hero card; the rest are route cards. Prices come from the API only. */
+/** Route cards with the computed "from" price; prices come from the API only. */
 export function PopularRoutes({
   routes,
   status,
@@ -17,33 +18,53 @@ export function PopularRoutes({
 }: PopularRoutesProps) {
   const { t } = useTranslation("homeSearch");
 
-  function routeCard(route: PopularRoute, isHero: boolean) {
+  function routeCard(route: PopularRoute) {
     const name = `${route.origin} → ${route.destination}`;
+    const isInternational = !DOMESTIC_AIRPORTS.has(route.destination);
     return (
-      <li key={route.destination} className={cn(isHero && "md:col-span-2")}>
+      <li key={route.destination}>
         <button
           type="button"
           aria-label={t("popular.pick", { route: name })}
           onClick={() => onSelect(route)}
-          className={cn(
-            "flex min-h-11 w-full flex-col items-start gap-1 rounded-md border border-line bg-card p-4 text-left shadow-card outline-none hover:bg-iris-mist focus-visible:ring-3 focus-visible:ring-ring/40",
-            isHero && "bg-linear-to-br from-lilac via-sky to-blush p-6",
-          )}
+          className="flex min-h-11 w-full flex-col items-start gap-2 rounded-lg border border-white/70 bg-white/90 p-5 text-left shadow-card outline-none hover:bg-white focus-visible:ring-3 focus-visible:ring-ring/40"
         >
-          <span
-            className={cn(
-              "font-display font-semibold break-words text-midnight",
-              isHero ? "text-2xl" : "text-base",
+          <span className="flex min-h-6 w-full items-center justify-between gap-2 text-xs text-muted-foreground">
+            <span>
+              {isInternational
+                ? t("popular.international")
+                : t("popular.domestic")}
+            </span>
+            {isInternational && (
+              <span className="rounded-full bg-iris-mist px-3 py-0.5 text-midnight">
+                {t("popular.passport")}
+              </span>
             )}
-          >
-            {route.city}
           </span>
-          <span className="text-sm text-muted-foreground">{name}</span>
-          <span className="text-sm font-medium text-foreground">
-            {route.fromPrice === null
-              ? t("popular.noSeats")
-              : t("popular.from", { price: formatBaht(route.fromPrice) })}
+          <span className="font-display text-2xl font-bold text-midnight">
+            {route.origin} → {route.destination}
           </span>
+          <span className="text-sm text-muted-foreground">
+            {t(`city.${route.origin}`)} – {t(`city.${route.destination}`)}
+          </span>
+          {route.fromPrice === null ? (
+            <span className="text-sm font-medium">{t("popular.noSeats")}</span>
+          ) : (
+            <>
+              <span
+                aria-hidden="true"
+                className="flex items-baseline gap-1 text-sm text-muted-foreground"
+              >
+                {t("popular.fromLabel")}
+                <span className="font-display text-2xl font-bold text-midnight">
+                  {formatBaht(route.fromPrice)}
+                </span>
+              </span>
+              <span className="sr-only">
+                {t("popular.from", { price: formatBaht(route.fromPrice) })}
+              </span>
+            </>
+          )}
         </button>
       </li>
     );
@@ -52,15 +73,12 @@ export function PopularRoutes({
   let body;
   if (status === "loading") {
     body = (
-      <ul className="grid gap-4 md:grid-cols-4" aria-busy="true">
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4" aria-busy="true">
         {Array.from({ length: SKELETON_COUNT }, (_, index) => (
           <li
             key={index}
             data-testid="route-skeleton"
-            className={cn(
-              "h-28 animate-pulse rounded-md bg-iris-mist",
-              index === 0 && "md:col-span-2",
-            )}
+            className={cn("h-40 animate-pulse rounded-lg bg-white/60")}
           />
         ))}
       </ul>
@@ -76,8 +94,8 @@ export function PopularRoutes({
     );
   } else {
     body = (
-      <ul className="grid gap-4 md:grid-cols-4">
-        {routes.map((route, index) => routeCard(route, index === 0))}
+      <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {routes.map(routeCard)}
       </ul>
     );
   }
@@ -85,10 +103,10 @@ export function PopularRoutes({
   if (status === "success" && routes.length === 0) return null;
 
   return (
-    <section aria-labelledby="popular-title" className="flex flex-col gap-3">
+    <section aria-labelledby="popular-title" className="flex flex-col gap-4">
       <h2
         id="popular-title"
-        className="font-display text-xl font-semibold text-midnight"
+        className="font-display text-[32px] leading-10 font-bold text-midnight"
       >
         {t("popular.title")}
       </h2>

@@ -32,13 +32,39 @@ async function settled() {
   await screen.findByText("โค้ด BINDEE10");
 }
 
+async function openPassengers(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getByRole("button", { name: /^ผู้โดยสาร:/ }));
+}
+
 function submitButton() {
   return screen.getByRole("button", { name: /ค้นหาเที่ยวบิน|กำลังค้นหา/ });
 }
 
+async function chooseAirport(
+  user: ReturnType<typeof userEvent.setup>,
+  field: "ต้นทาง" | "ปลายทาง",
+  option: string,
+) {
+  await user.click(screen.getByRole("combobox", { name: field }));
+  await user.click(await screen.findByRole("option", { name: option }));
+}
+
+/** Picks the last enabled day of the month that the calendar popover opens on. */
+async function pickLastEnabledDay(
+  user: ReturnType<typeof userEvent.setup>,
+  field: "วันเดินทางไป" | "วันเดินทางกลับ",
+) {
+  await user.click(screen.getByRole("button", { name: field }));
+  const grid = await screen.findByRole("grid");
+  const days = within(grid)
+    .getAllByRole("button")
+    .filter((day) => !(day as HTMLButtonElement).disabled);
+  await user.click(days[days.length - 1] as HTMLElement);
+}
+
 async function fillValid(user: ReturnType<typeof userEvent.setup>) {
-  await user.selectOptions(screen.getByLabelText("ปลายทาง"), "CNX");
-  await user.type(screen.getByLabelText("วันเดินทางไป"), "2999-10-08");
+  await chooseAirport(user, "ปลายทาง", "เชียงใหม่ CNX");
+  await pickLastEnabledDay(user, "วันเดินทางไป");
 }
 
 describe("HomePage", () => {
@@ -89,11 +115,17 @@ describe("HomePage", () => {
     it("When choosing ไป-กลับ, should show the return date; when เที่ยวเดียว, should hide it", async () => {
       const user = userEvent.setup();
       renderHome();
-      expect(screen.queryByLabelText("วันเดินทางกลับ")).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "วันเดินทางกลับ" }),
+      ).not.toBeInTheDocument();
       await user.click(screen.getByRole("tab", { name: "ไป-กลับ" }));
-      expect(screen.getByLabelText("วันเดินทางกลับ")).toBeVisible();
+      expect(
+        screen.getByRole("button", { name: "วันเดินทางกลับ" }),
+      ).toBeVisible();
       await user.click(screen.getByRole("tab", { name: "เที่ยวเดียว" }));
-      expect(screen.queryByLabelText("วันเดินทางกลับ")).not.toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "วันเดินทางกลับ" }),
+      ).not.toBeInTheDocument();
       await settled();
     });
   });
@@ -103,7 +135,7 @@ describe("HomePage", () => {
       const user = userEvent.setup();
       renderHome();
       await fillValid(user);
-      await user.selectOptions(screen.getByLabelText("ปลายทาง"), "BKK");
+      await chooseAirport(user, "ปลายทาง", "กรุงเทพฯ (สุวรรณภูมิ) BKK");
       await user.click(submitButton());
       expect(
         screen.getByText(/ต้นทางและปลายทางต้องไม่ใช่สนามบินเดียวกัน/),
@@ -117,6 +149,7 @@ describe("HomePage", () => {
     it("When adults=1, should disable + for infants after one infant and show the hint", async () => {
       const user = userEvent.setup();
       renderHome();
+      await openPassengers(user);
       const plusInfants = screen.getByRole("button", { name: "เพิ่ม ทารก" });
       await user.click(plusInfants);
       expect(plusInfants).toBeDisabled();
@@ -129,6 +162,7 @@ describe("HomePage", () => {
     it("When adults + children reaches 9, should disable + and show the total hint", async () => {
       const user = userEvent.setup();
       renderHome();
+      await openPassengers(user);
       const plusChildren = screen.getByRole("button", { name: "เพิ่ม เด็ก" });
       for (let i = 0; i < 8; i += 1) await user.click(plusChildren);
       expect(plusChildren).toBeDisabled();
@@ -172,7 +206,9 @@ describe("HomePage", () => {
       expect(await screen.findByRole("alert")).toHaveTextContent(
         "ลองอีกครั้งได้เลย",
       );
-      expect(screen.getByLabelText("ปลายทาง")).toHaveValue("CNX");
+      expect(screen.getByRole("combobox", { name: "ปลายทาง" })).toHaveValue(
+        "เชียงใหม่ CNX",
+      );
       await user.click(submitButton());
       await waitFor(() =>
         expect(router.state.location.pathname).toBe("/flights"),
@@ -245,8 +281,12 @@ describe("HomePage", () => {
       await user.click(
         await screen.findByRole("button", { name: "เลือกเส้นทาง BKK → SIN" }),
       );
-      expect(screen.getByLabelText("ปลายทาง")).toHaveValue("SIN");
-      expect(screen.getByText("เริ่มต้น ฿990 / ท่าน รวมภาษี")).toBeVisible();
+      expect(screen.getByRole("combobox", { name: "ปลายทาง" })).toHaveValue(
+        "สิงคโปร์ SIN",
+      );
+      expect(screen.getAllByText("เริ่มต้น ฿990 / ท่าน รวมภาษี")).toHaveLength(
+        2,
+      );
     });
   });
 });
