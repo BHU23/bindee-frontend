@@ -1,6 +1,4 @@
-<<<<<<< Updated upstream
 node_modules
-=======
 # Logs
 logs
 *.log
@@ -25,4 +23,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
->>>>>>> Stashed changes
+
+coverage/
