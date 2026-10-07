@@ -6,6 +6,15 @@ export const homeSearch = {
     roundTrip: "ไป-กลับ",
     oneWay: "เที่ยวเดียว",
   },
+  airport: {
+    BKK: "กรุงเทพฯ (สุวรรณภูมิ) BKK",
+    DMK: "กรุงเทพฯ (ดอนเมือง) DMK",
+    CNX: "เชียงใหม่ CNX",
+    HKT: "ภูเก็ต HKT",
+    HDY: "หาดใหญ่ HDY",
+    SIN: "สิงคโปร์ SIN",
+    NRT: "โตเกียว (นาริตะ) NRT",
+  },
   field: {
     origin: "ต้นทาง",
     destination: "ปลายทาง",
@@ -46,12 +55,14 @@ export const homeSearch = {
   recent: {
     title: "ค้นหาล่าสุด",
     pax: "{{count}} ท่าน",
+    searchAgain: "ค้นหาอีกครั้ง {{route}}",
     roundTrip: "ไป-กลับ",
     oneWay: "เที่ยวเดียว",
   },
   popular: {
     title: "เส้นทางยอดนิยม",
     from: "เริ่มต้น {{price}} / ท่าน รวมภาษี",
+    pick: "เลือกเส้นทาง {{route}}",
     noSeats: "ที่นั่งเต็มช่วงนี้",
     error: "โหลดเส้นทางยอดนิยมไม่สำเร็จ",
   },
@@ -60,8 +71,5 @@ export const homeSearch = {
     code: "โค้ด {{code}}",
     validUntil: "ใช้ได้ถึง {{date}}",
     error: "โหลดโปรโมชันไม่สำเร็จ",
-  },
-  support: {
-    title: "ต้องการความช่วยเหลือ?",
   },
 } as const;
