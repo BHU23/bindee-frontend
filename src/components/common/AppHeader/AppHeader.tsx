@@ -24,7 +24,14 @@ export function AppHeader({ title, onBack, right }: AppHeaderProps) {
             {title}
           </h1>
         ) : (
-          <img src="/brand/bindee-wordmark.svg" alt="Bin Dee" className="h-6" />
+          <span className="flex items-center gap-2">
+            <img src="/brand/bindee-logo.png" alt="" className="size-9" />
+            <img
+              src="/brand/bindee-wordmark.svg"
+              alt="Bin Dee"
+              className="h-6"
+            />
+          </span>
         )}
       </div>
       {right && <div className="flex shrink-0 items-center gap-2">{right}</div>}

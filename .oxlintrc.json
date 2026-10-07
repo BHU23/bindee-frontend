@@ -31,6 +31,26 @@
           }
         ]
       }
+    },
+    {
+      "files": ["src/features/home-search/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/features/**",
+                  "!@/features/home-search",
+                  "!@/features/home-search/**"
+                ],
+                "message": "No cross-feature imports. Move shared code to components/common, hooks or lib."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }
