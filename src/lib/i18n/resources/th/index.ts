@@ -1,6 +1,16 @@
 import { common } from "./common";
+import { fareSelection } from "./fareSelection";
 import { flightResults } from "./flightResults";
 import { homeSearch } from "./homeSearch";
+import { priceChanged } from "./priceChanged";
+import { returnFlights } from "./returnFlights";
 
 /** One namespace per feature: add `<feature>: { ... }` here when a feature is built. */
-export const th = { common, flightResults, homeSearch };
+export const th = {
+  common,
+  fareSelection,
+  flightResults,
+  homeSearch,
+  priceChanged,
+  returnFlights,
+};
