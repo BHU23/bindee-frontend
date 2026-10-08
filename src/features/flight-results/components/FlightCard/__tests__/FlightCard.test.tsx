@@ -61,15 +61,17 @@ describe("FlightCard", () => {
     },
   );
 
-  it("When onSelect is set and the card is tapped, should report the flight", async () => {
+  it("UI-FS-01: When onSelect is given and the select button is pressed, should call it with the flight", async () => {
     const onSelect = vi.fn();
     render(<FlightCard flight={cheapest} onSelect={onSelect} />);
-    await userEvent.click(screen.getByRole("button", { name: /BD101/ }));
+    await userEvent.click(screen.getByRole("button", { name: "เลือก" }));
     expect(onSelect).toHaveBeenCalledWith(cheapest);
   });
 
-  it("When onSelect is absent, should render no button", () => {
+  it("UI-FS-01: When onSelect is not given, should not show a select button", () => {
     render(<FlightCard flight={cheapest} />);
-    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "เลือก" }),
+    ).not.toBeInTheDocument();
   });
 });

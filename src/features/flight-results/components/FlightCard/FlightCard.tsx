@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatBaht } from "@/lib/format";
 import { formatAirportTime, splitDuration } from "../../lib/time";
@@ -10,6 +11,7 @@ const SEATS_LEFT_HINT_MAX = 5;
 /** One result: times are shown in each airport's own timezone. */
 export function FlightCard({ flight, onSelect }: FlightCardProps) {
   const { t } = useTranslation("flightResults");
+  const { t: tf } = useTranslation("fareSelection");
   const { hours, minutes } = splitDuration(flight.duration);
   const duration =
     hours === 0
@@ -20,7 +22,7 @@ export function FlightCard({ flight, onSelect }: FlightCardProps) {
   const showSeats =
     flight.seatsLeft !== undefined && flight.seatsLeft <= SEATS_LEFT_HINT_MAX;
 
-  const card = (
+  return (
     <Card className="gap-3 px-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="font-display text-sm font-semibold text-midnight">
@@ -61,17 +63,9 @@ export function FlightCard({ flight, onSelect }: FlightCardProps) {
           </span>
         )}
       </div>
+      {onSelect && (
+        <Button onClick={() => onSelect(flight)}>{tf("select")}</Button>
+      )}
     </Card>
-  );
-
-  if (!onSelect) return card;
-  return (
-    <button
-      type="button"
-      className="w-full rounded-md text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
-      onClick={() => onSelect(flight)}
-    >
-      {card}
-    </button>
   );
 }

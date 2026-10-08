@@ -64,6 +64,13 @@ function renderPage(state: unknown = flowFixture) {
   return router;
 }
 
+async function selectButtonOf(flightNo: RegExp): Promise<HTMLElement> {
+  const card = (await screen.findByText(flightNo)).closest(
+    '[data-slot="card"]',
+  ) as HTMLElement;
+  return within(card).getByRole("button", { name: "เลือก" });
+}
+
 describe("ReturnFlightsPage", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -158,7 +165,7 @@ describe("ReturnFlightsPage", () => {
   it("When tapping a return flight and choosing a fare, should go to passengers with both legs", async () => {
     const user = userEvent.setup();
     const router = renderPage();
-    await user.click(await screen.findByRole("button", { name: /BD102/ }));
+    await user.click(await selectButtonOf(/BD102/));
     expect(screen.getByText("sheet BD102")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "pick fare" }));
     await waitFor(() =>
@@ -174,7 +181,7 @@ describe("ReturnFlightsPage", () => {
   it("When the sheet is closed, should hide it without leaving", async () => {
     const user = userEvent.setup();
     renderPage();
-    await user.click(await screen.findByRole("button", { name: /BD206/ }));
+    await user.click(await selectButtonOf(/BD206/));
     await user.click(screen.getByRole("button", { name: "close sheet" }));
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
