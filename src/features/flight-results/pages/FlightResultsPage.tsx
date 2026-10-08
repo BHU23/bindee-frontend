@@ -6,6 +6,7 @@ import { Icon } from "@/components/common/Icon";
 import { Steps } from "@/components/common/Steps";
 import { Button } from "@/components/ui/button";
 import { useAsyncResource } from "@/hooks/useAsyncResource";
+import { FareSelectionSheet, useOutboundFlow } from "@/features/fare-selection";
 import { formatBaht, formatDateTh } from "@/lib/format";
 import { getFlights } from "../api/flightResultsApi";
 import { DateStrip, type DateStripDay } from "../components/DateStrip";
@@ -58,6 +59,7 @@ export function FlightResultsPage() {
 
 function FlightResults({ searchId }: { searchId: string }) {
   const { t } = useTranslation("flightResults");
+  const { t: tf } = useTranslation("fareSelection");
   const navigate = useNavigate();
   const [params, setParams] = useSearchParams();
   const filters = useMemo(() => parseFilters(params), [params]);
@@ -70,6 +72,8 @@ function FlightResults({ searchId }: { searchId: string }) {
       (signal) => getFlights(searchId, filters, signal),
       [searchId, filterKey],
     );
+
+  const outbound = useOutboundFlow({ searchId, query: data?.query });
 
   function applyFilters(next: FlightFilters) {
     const nextParams = filtersToParams(next);
@@ -179,11 +183,30 @@ function FlightResults({ searchId }: { searchId: string }) {
           <ul className="flex flex-col gap-3">
             {data.flights.map((flight) => (
               <li key={flight.flightId}>
-                <FlightCard flight={flight} />
+                <FlightCard
+                  flight={flight}
+                  onSelect={(picked) => void outbound.selectFlight(picked)}
+                />
               </li>
             ))}
           </ul>
           <p className="text-sm text-muted-foreground">{t("priceNote")}</p>
+          {outbound.hasError && !outbound.priceChange && (
+            <p role="alert" className="text-sm text-destructive">
+              {tf("draftError")}
+            </p>
+          )}
+          {outbound.draftId && (
+            <FareSelectionSheet
+              open={outbound.isSheetOpen}
+              onOpenChange={outbound.setSheetOpen}
+              flight={outbound.flight}
+              draftId={outbound.draftId}
+              leg="outbound"
+              onSelected={outbound.handleSelected}
+              onPriceChanged={outbound.handlePriceChanged}
+            />
+          )}
         </>
       )}
     </div>

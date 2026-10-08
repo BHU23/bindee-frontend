@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatBaht } from "@/lib/format";
 import { formatAirportTime, splitDuration } from "../../lib/time";
@@ -8,8 +9,9 @@ import type { FlightCardProps } from "./FlightCard.types";
 const SEATS_LEFT_HINT_MAX = 5;
 
 /** One result: times are shown in each airport's own timezone. */
-export function FlightCard({ flight }: FlightCardProps) {
+export function FlightCard({ flight, onSelect }: FlightCardProps) {
   const { t } = useTranslation("flightResults");
+  const { t: tf } = useTranslation("fareSelection");
   const { hours, minutes } = splitDuration(flight.duration);
   const duration =
     hours === 0
@@ -61,6 +63,9 @@ export function FlightCard({ flight }: FlightCardProps) {
           </span>
         )}
       </div>
+      {onSelect && (
+        <Button onClick={() => onSelect(flight)}>{tf("select")}</Button>
+      )}
     </Card>
   );
 }

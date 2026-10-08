@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { flightsFixture } from "../../../__fixtures__/flightResults";
 import type { FlightCardDto } from "../../../types/flightResults";
 import { FlightCard } from "../FlightCard";
@@ -59,4 +60,18 @@ describe("FlightCard", () => {
       expect(screen.queryByText(/เหลือ/)).not.toBeInTheDocument();
     },
   );
+
+  it("UI-FS-01: When onSelect is given and the select button is pressed, should call it with the flight", async () => {
+    const onSelect = vi.fn();
+    render(<FlightCard flight={cheapest} onSelect={onSelect} />);
+    await userEvent.click(screen.getByRole("button", { name: "เลือก" }));
+    expect(onSelect).toHaveBeenCalledWith(cheapest);
+  });
+
+  it("UI-FS-01: When onSelect is not given, should not show a select button", () => {
+    render(<FlightCard flight={cheapest} />);
+    expect(
+      screen.queryByRole("button", { name: "เลือก" }),
+    ).not.toBeInTheDocument();
+  });
 });
