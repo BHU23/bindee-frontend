@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { getRecentSearches } from "../api/searchApi";
 import type { RecentSearch, RecentSearchResponse } from "../types/homeSearch";
-import { useAsyncResource, type ResourceStatus } from "./useAsyncResource";
+import {
+  useAsyncResource,
+  type ResourceStatus,
+} from "@/hooks/useAsyncResource";
 
 export interface UseRecentSearchesReturn {
   searches: RecentSearch[];

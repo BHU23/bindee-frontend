@@ -1,22 +1,11 @@
-export type TripType = "ONE_WAY" | "ROUND_TRIP";
-export type Cabin = "ECONOMY";
+import type { Cabin, SearchQueryDto, TripType } from "@/types/search";
 
-export interface SearchQueryDto {
-  tripType: TripType;
-  origin: string;
-  destination: string;
-  departDate: string;
-  returnDate?: string;
-  adults: number;
-  children: number;
-  infants: number;
-  cabin: Cabin;
-}
-
-export interface CreateSearchResponse {
-  searchId: string;
-  expiresAt: string;
-}
+export type {
+  Cabin,
+  CreateSearchResponse,
+  SearchQueryDto,
+  TripType,
+} from "@/types/search";
 
 export interface RecentSearchResponse {
   id: string;

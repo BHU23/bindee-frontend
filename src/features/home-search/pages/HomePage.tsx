@@ -14,7 +14,7 @@ import { usePromotions } from "../hooks/usePromotions";
 import { useRecentSearches } from "../hooks/useRecentSearches";
 import { useSearchForm } from "../hooks/useSearchForm";
 import { bangkokDay } from "../lib/dates";
-import { RESULTS_PATH } from "../lib/routes";
+import { RESULTS_PATH } from "@/lib/routes";
 
 /** Thin route-level screen: hero and search form first, shortcuts and reassurance follow. */
 export function HomePage() {

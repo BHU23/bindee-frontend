@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { getPopularRoutes } from "../api/searchApi";
 import type { PopularRoute, PopularRouteResponse } from "../types/homeSearch";
-import { useAsyncResource, type ResourceStatus } from "./useAsyncResource";
+import {
+  useAsyncResource,
+  type ResourceStatus,
+} from "@/hooks/useAsyncResource";
 
 export interface UsePopularRoutesReturn {
   routes: PopularRoute[];

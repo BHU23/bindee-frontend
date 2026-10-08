@@ -88,6 +88,17 @@ describe("apiClient", () => {
       });
     });
 
+    it("When the error response carries extra data, should expose the parsed body on ApiError", async () => {
+      const body = {
+        error: { code: "SEARCH_EXPIRED", message: "gone", query: { a: 1 } },
+      };
+      fetchFn.mockResolvedValue(jsonResponse(410, body));
+      await expect(setup(fetchFn).request("/x")).rejects.toMatchObject({
+        status: 410,
+        body,
+      });
+    });
+
     it("When the error body is not JSON, should throw UNKNOWN_ERROR with the status text", async () => {
       fetchFn.mockResolvedValue(
         new Response("boom", { status: 502, statusText: "Bad Gateway" }),

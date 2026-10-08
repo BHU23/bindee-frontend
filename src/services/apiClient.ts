@@ -8,18 +8,22 @@ export class ApiError extends Error {
   readonly status: number;
   readonly code: string;
   readonly fields?: ApiErrorFields;
+  /** The parsed JSON error response, for codes that carry extra data (e.g. `SEARCH_EXPIRED`). */
+  readonly body?: unknown;
 
   constructor(
     status: number,
     code: string,
     message: string,
     fields?: ApiErrorFields,
+    body?: unknown,
   ) {
     super(message);
     this.name = "ApiError";
     this.status = status;
     this.code = code;
     this.fields = fields;
+    this.body = body;
   }
 }
 
@@ -92,6 +96,7 @@ async function toApiError(response: Response): Promise<ApiError> {
     body.error?.code ?? "UNKNOWN_ERROR",
     body.error?.message ?? response.statusText,
     body.error?.fields,
+    body,
   );
 }
 

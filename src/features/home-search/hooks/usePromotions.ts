@@ -1,7 +1,10 @@
 import { useMemo } from "react";
 import { getPromotions } from "../api/searchApi";
 import type { Promotion, PromotionResponse } from "../types/homeSearch";
-import { useAsyncResource, type ResourceStatus } from "./useAsyncResource";
+import {
+  useAsyncResource,
+  type ResourceStatus,
+} from "@/hooks/useAsyncResource";
 
 export interface UsePromotionsReturn {
   promotions: Promotion[];
