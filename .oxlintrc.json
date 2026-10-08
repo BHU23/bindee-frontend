@@ -71,6 +71,26 @@
           }
         ]
       }
+    },
+    {
+      "files": ["src/features/review-hold/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/features/**",
+                  "!@/features/review-hold",
+                  "!@/features/review-hold/**"
+                ],
+                "message": "No cross-feature imports. Move shared code to components/common, hooks or lib."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

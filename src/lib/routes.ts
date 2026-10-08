@@ -6,3 +6,5 @@ export const RETURN_FLIGHTS_PATH = "/booking/return";
 export const PASSENGERS_PATH = "/booking/passengers";
 /** Static demo privacy policy (passenger-info); also shown in a Sheet next to the consent checkbox. */
 export const PRIVACY_PATH = "/privacy";
+/** Review & hold (review-hold); passenger-info navigates here after saving. Router state: `ReviewFlowState`. */
+export const REVIEW_PATH = "/booking/review";

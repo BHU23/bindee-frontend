@@ -5,6 +5,7 @@ import { homeSearch } from "./homeSearch";
 import { passengerInfo } from "./passengerInfo";
 import { priceChanged } from "./priceChanged";
 import { returnFlights } from "./returnFlights";
+import { reviewHold } from "./reviewHold";
 
 /** One namespace per feature: add `<feature>: { ... }` here when a feature is built. */
 export const th = {
@@ -15,4 +16,5 @@ export const th = {
   passengerInfo,
   priceChanged,
   returnFlights,
+  reviewHold,
 };
