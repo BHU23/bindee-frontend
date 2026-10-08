@@ -2,6 +2,7 @@ import { common } from "./common";
 import { fareSelection } from "./fareSelection";
 import { flightResults } from "./flightResults";
 import { homeSearch } from "./homeSearch";
+import { passengerInfo } from "./passengerInfo";
 import { priceChanged } from "./priceChanged";
 import { returnFlights } from "./returnFlights";
 
@@ -11,6 +12,7 @@ export const th = {
   fareSelection,
   flightResults,
   homeSearch,
+  passengerInfo,
   priceChanged,
   returnFlights,
 };

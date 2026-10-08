@@ -51,6 +51,26 @@
           }
         ]
       }
+    },
+    {
+      "files": ["src/features/passenger-info/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/features/**",
+                  "!@/features/passenger-info",
+                  "!@/features/passenger-info/**"
+                ],
+                "message": "No cross-feature imports. Move shared code to components/common, hooks or lib."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

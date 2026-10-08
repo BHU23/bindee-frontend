@@ -4,3 +4,5 @@ export const RESULTS_PATH = "/flights";
 export const RETURN_FLIGHTS_PATH = "/booking/return";
 /** Passenger-info (a later spec); fare-selection navigates here after the last leg. */
 export const PASSENGERS_PATH = "/booking/passengers";
+/** Static demo privacy policy (passenger-info); also shown in a Sheet next to the consent checkbox. */
+export const PRIVACY_PATH = "/privacy";
