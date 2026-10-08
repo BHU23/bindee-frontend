@@ -91,6 +91,26 @@
           }
         ]
       }
+    },
+    {
+      "files": ["src/features/payment-method/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/features/**",
+                  "!@/features/payment-method",
+                  "!@/features/payment-method/**"
+                ],
+                "message": "No cross-feature imports. Move shared code to components/common, hooks or lib."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

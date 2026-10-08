@@ -8,3 +8,5 @@ export const PASSENGERS_PATH = "/booking/passengers";
 export const PRIVACY_PATH = "/privacy";
 /** Review & hold (review-hold); passenger-info navigates here after saving. Router state: `ReviewFlowState`. */
 export const REVIEW_PATH = "/booking/review";
+/** Payment method (payment-method); review-hold navigates here after the booking is created. Router state: `PaymentFlowState`. */
+export const PAYMENT_METHOD_PATH = "/booking/payment";
