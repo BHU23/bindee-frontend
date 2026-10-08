@@ -2,7 +2,12 @@ import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { PASSENGERS_PATH, RESULTS_PATH, REVIEW_PATH } from "@/lib/routes";
+import {
+  PASSENGERS_PATH,
+  PAYMENT_METHOD_PATH,
+  RESULTS_PATH,
+  REVIEW_PATH,
+} from "@/lib/routes";
 import { ApiError } from "@/services/apiClient";
 import {
   bookingFixture,
@@ -20,6 +25,7 @@ function renderPage(state: unknown = reviewFlow) {
       { path: REVIEW_PATH, element: <ReviewPage /> },
       { path: RESULTS_PATH, element: <p>results page</p> },
       { path: PASSENGERS_PATH, element: <p>passengers page</p> },
+      { path: PAYMENT_METHOD_PATH, element: <p>payment page</p> },
       { path: "/", element: <p>home page</p> },
     ],
     { initialEntries: [{ pathname: REVIEW_PATH, state }] },
@@ -149,15 +155,23 @@ describe("ReviewPage", () => {
     });
   });
 
-  it("UI-RH-04: When the booking is created, should show the countdown timer with the PNR", async () => {
+  it("UI-RH-04: When the booking is created, should open the payment method page with the PNR, hold expiry and total", async () => {
+    const holdExpiresAt = holdIn(15);
+    vi.mocked(api.createBooking).mockResolvedValue({
+      ...bookingFixture,
+      holdExpiresAt,
+    });
     const user = userEvent.setup();
-    renderPage();
+    const router = renderPage();
     await user.click(screen.getByRole("checkbox", { name: /ข้าพเจ้าได้อ่าน/ }));
     await user.click(screen.getByRole("button", CTA));
-    const timer = await screen.findByRole("timer");
-    expect(timer).toHaveTextContent("AB12CD");
-    expect(screen.getByRole("status")).toHaveTextContent("สร้างการจองแล้ว");
-    expect(screen.getByRole("button", CTA)).toBeDisabled();
+    expect(await screen.findByText("payment page")).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(PAYMENT_METHOD_PATH);
+    expect(router.state.location.state).toEqual({
+      pnr: "AB12CD",
+      holdExpiresAt,
+      total: 1090,
+    });
   });
 
   it("UI-RH-05: When the CTA is double-clicked, should send only one request and disable the button", async () => {
@@ -172,7 +186,7 @@ describe("ReviewPage", () => {
       screen.getByRole("button", { name: "กำลังยืนยันการจอง" }),
     ).toBeDisabled();
     deferred.resolve({ ...bookingFixture, holdExpiresAt: holdIn(15) });
-    expect(await screen.findByRole("timer")).toBeInTheDocument();
+    expect(await screen.findByText("payment page")).toBeInTheDocument();
   });
 
   it("UI-RH-05: When a failed confirmation is retried, should reuse the same idempotency key", async () => {
@@ -187,7 +201,7 @@ describe("ReviewPage", () => {
       "ยืนยันการจองไม่สำเร็จ",
     );
     await user.click(screen.getByRole("button", CTA));
-    await screen.findByRole("timer");
+    await screen.findByText("payment page");
     const [first, second] = vi.mocked(api.createBooking).mock.calls;
     expect(first[1]).toBeTruthy();
     expect(second[1]).toBe(first[1]);
@@ -204,15 +218,5 @@ describe("ReviewPage", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "ผลการค้นหาหมดอายุแล้ว",
     );
-  });
-
-  it("When the booking already exists, should not send a second request", async () => {
-    const user = userEvent.setup();
-    renderPage();
-    await user.click(screen.getByRole("checkbox", { name: /ข้าพเจ้าได้อ่าน/ }));
-    await user.click(screen.getByRole("button", CTA));
-    await screen.findByRole("timer");
-    await user.keyboard("{Enter}");
-    expect(api.createBooking).toHaveBeenCalledTimes(1);
   });
 });

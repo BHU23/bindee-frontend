@@ -1,12 +1,15 @@
-import type { FormEvent } from "react";
+import { useEffect, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Navigate, useLocation, useNavigate } from "react-router";
 import { AppHeader } from "@/components/common/AppHeader";
-import { HoldCountdown } from "@/components/common/HoldCountdown";
 import { Steps } from "@/components/common/Steps";
 import { Alert } from "@/components/ui/alert";
 import { formatBaht } from "@/lib/format";
-import { PASSENGERS_PATH, RESULTS_PATH } from "@/lib/routes";
+import {
+  PASSENGERS_PATH,
+  PAYMENT_METHOD_PATH,
+  RESULTS_PATH,
+} from "@/lib/routes";
 import { ConfirmSection } from "../components/ConfirmSection";
 import { ItinerarySection } from "../components/ItinerarySection";
 import { PassengersSection } from "../components/PassengersSection";
@@ -36,6 +39,19 @@ function Review({ flow }: { flow: ReviewFlowState }) {
       : []),
   ];
 
+  const { booking } = confirm;
+  // The booking exists: continue to the payment method (payment-method reads this state).
+  useEffect(() => {
+    if (!booking) return;
+    void navigate(PAYMENT_METHOD_PATH, {
+      state: {
+        pnr: booking.pnr,
+        holdExpiresAt: booking.holdExpiresAt,
+        total: booking.total,
+      },
+    });
+  }, [booking, navigate]);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     void confirm.submit();
@@ -51,12 +67,6 @@ function Review({ flow }: { flow: ReviewFlowState }) {
         steps={STEP_KEYS.map((key) => t(`steps.${key}`))}
         current={CURRENT_STEP}
       />
-      {confirm.booking && (
-        <HoldCountdown
-          pnr={confirm.booking.pnr}
-          holdExpiresAt={confirm.booking.holdExpiresAt}
-        />
-      )}
       <form noValidate onSubmit={handleSubmit} className="flex flex-col gap-6">
         <ItinerarySection
           outbound={flow.outbound}
@@ -80,11 +90,6 @@ function Review({ flow }: { flow: ReviewFlowState }) {
         {confirm.submitError && (
           <Alert variant="destructive" role="alert">
             {confirm.submitError}
-          </Alert>
-        )}
-        {confirm.booking && (
-          <Alert variant="success" role="status">
-            {t("booked")}
           </Alert>
         )}
       </form>
