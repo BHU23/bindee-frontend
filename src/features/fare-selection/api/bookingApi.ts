@@ -8,8 +8,9 @@ import type {
   SelectFareResponse,
 } from "../types/booking";
 
-const draftPath = (draftId: string) =>
-  `/booking-drafts/${encodeURIComponent(draftId)}`;
+function draftPath(draftId: string): string {
+  return `/booking-drafts/${encodeURIComponent(draftId)}`;
+}
 
 export function createDraft(
   searchId: string,
