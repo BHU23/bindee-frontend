@@ -42,6 +42,26 @@ describe("app routes", () => {
     router.dispose();
   });
 
+  it("UI-PX-10: When the path is /privacy, should render the static policy in the shell", () => {
+    const router = createMemoryRouter(appRoutes, {
+      initialEntries: ["/privacy"],
+    });
+    render(<RouterProvider router={router} />);
+    expect(
+      screen.getByRole("heading", { name: "นโยบายความเป็นส่วนตัว" }),
+    ).toBeInTheDocument();
+    router.dispose();
+  });
+
+  it("When the path is /booking/passengers without flow state, should send the guest home", async () => {
+    const router = createMemoryRouter(appRoutes, {
+      initialEntries: ["/booking/passengers"],
+    });
+    render(<RouterProvider router={router} />);
+    await waitFor(() => expect(router.state.location.pathname).toBe("/"));
+    router.dispose();
+  });
+
   it("UI-FND-06: When the shell renders, should show no language toggle", () => {
     const router = createMemoryRouter(appRoutes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
