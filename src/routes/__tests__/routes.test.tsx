@@ -1,7 +1,12 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { createMemoryRouter, RouterProvider } from "react-router";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { appRoutes, createAppRouter } from "..";
+
+vi.mock("@/features/flight-results/api/flightResultsApi", () => ({
+  getFlights: () => new Promise(() => {}),
+  createSearch: vi.fn(),
+}));
 
 describe("app routes", () => {
   it("When the path is unknown, should render the shell with the Thai not-found page", () => {
@@ -16,6 +21,25 @@ describe("app routes", () => {
       "href",
       "/",
     );
+  });
+
+  it("When the path is /flights without a searchId, should render inside the shell and send the guest home", async () => {
+    const router = createMemoryRouter(appRoutes, {
+      initialEntries: ["/flights"],
+    });
+    render(<RouterProvider router={router} />);
+    await waitFor(() => expect(router.state.location.pathname).toBe("/"));
+  });
+
+  it("When the path is /flights with a searchId, should render the results screen in the shell", async () => {
+    const router = createMemoryRouter(appRoutes, {
+      initialEntries: ["/flights?searchId=s1"],
+    });
+    render(<RouterProvider router={router} />);
+    expect(
+      screen.getByRole("heading", { name: "เลือกเที่ยวบิน" }),
+    ).toBeInTheDocument();
+    router.dispose();
   });
 
   it("UI-FND-06: When the shell renders, should show no language toggle", () => {
