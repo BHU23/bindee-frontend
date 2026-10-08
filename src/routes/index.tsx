@@ -4,11 +4,13 @@ import { ReturnFlightsPage } from "@/features/fare-selection";
 import { FlightResultsPage } from "@/features/flight-results";
 import { HomePage } from "@/features/home-search";
 import { PassengersPage, PrivacyPage } from "@/features/passenger-info";
+import { ReviewPage } from "@/features/review-hold";
 import {
   PASSENGERS_PATH,
   PRIVACY_PATH,
   RESULTS_PATH,
   RETURN_FLIGHTS_PATH,
+  REVIEW_PATH,
 } from "@/lib/routes";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 
@@ -21,6 +23,7 @@ export const appRoutes: RouteObject[] = [
       { path: RESULTS_PATH, element: <FlightResultsPage /> },
       { path: RETURN_FLIGHTS_PATH, element: <ReturnFlightsPage /> },
       { path: PASSENGERS_PATH, element: <PassengersPage /> },
+      { path: REVIEW_PATH, element: <ReviewPage /> },
       { path: PRIVACY_PATH, element: <PrivacyPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],

@@ -4,7 +4,7 @@ import { Navigate, useLocation, useNavigate } from "react-router";
 import { AppHeader } from "@/components/common/AppHeader";
 import { Steps } from "@/components/common/Steps";
 import { Alert } from "@/components/ui/alert";
-import { RESULTS_PATH } from "@/lib/routes";
+import { RESULTS_PATH, REVIEW_PATH } from "@/lib/routes";
 import { ConsentSection } from "../components/ConsentSection";
 import { ContactSection } from "../components/ContactSection";
 import { PassengerCard } from "../components/PassengerCard";
@@ -33,9 +33,21 @@ function Passengers({ flow }: { flow: PassengerFlowState }) {
   const navigate = useNavigate();
   const form = usePassengerForm(flow);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    void form.submit();
+    if (!(await form.submit())) return;
+    // review-hold reads this state; the names are what the guest just saved.
+    void navigate(REVIEW_PATH, {
+      state: {
+        ...flow,
+        passengers: form.slots.map((slot, index) => ({
+          type: slot.type,
+          title: form.passengers[index].title,
+          firstName: form.passengers[index].firstName.trim(),
+          lastName: form.passengers[index].lastName.trim(),
+        })),
+      },
+    });
   }
 
   return (
@@ -59,7 +71,7 @@ function Passengers({ flow }: { flow: PassengerFlowState }) {
       ) : (
         <form
           noValidate
-          onSubmit={handleSubmit}
+          onSubmit={(event) => void handleSubmit(event)}
           className="flex flex-col gap-6"
         >
           <p className="text-sm text-muted-foreground">{t("intro")}</p>
@@ -94,11 +106,6 @@ function Passengers({ flow }: { flow: PassengerFlowState }) {
           {form.submitError && (
             <Alert variant="destructive" role="alert">
               {form.submitError}
-            </Alert>
-          )}
-          {form.isSaved && (
-            <Alert variant="success" role="status">
-              {t("saved")}
             </Alert>
           )}
           <PassengerFooter

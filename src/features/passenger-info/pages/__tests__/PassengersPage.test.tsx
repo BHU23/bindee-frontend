@@ -2,7 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { PASSENGERS_PATH, RESULTS_PATH } from "@/lib/routes";
+import { PASSENGERS_PATH, RESULTS_PATH, REVIEW_PATH } from "@/lib/routes";
 import { ApiError } from "@/services/apiClient";
 import {
   emptySaved,
@@ -20,6 +20,7 @@ function renderPage(state: unknown = singleAdultFlow) {
     [
       { path: PASSENGERS_PATH, element: <PassengersPage /> },
       { path: RESULTS_PATH, element: <p>results page</p> },
+      { path: REVIEW_PATH, element: <p>review page</p> },
       { path: "/", element: <p>home page</p> },
     ],
     { initialEntries: [{ pathname: PASSENGERS_PATH, state }] },
@@ -200,17 +201,39 @@ describe("PassengersPage", () => {
     ).toBeChecked();
   });
 
-  it("When all data is valid and consent is given, should save once and confirm", async () => {
+  it("When all data is valid and consent is given, should save once and go to the review with the passengers", async () => {
     const user = userEvent.setup();
-    renderPage();
+    const router = renderPage();
     await fillAdult(user);
     await user.click(screen.getByRole("checkbox", { name: /ข้าพเจ้ายอมรับ/ }));
     await user.click(screen.getByRole("button", { name: "ไปต่อ" }));
-    expect(
-      await screen.findByText("บันทึกข้อมูลผู้โดยสารแล้ว"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("review page")).toBeInTheDocument();
     expect(api.savePassengers).toHaveBeenCalledTimes(1);
     expect(vi.mocked(api.savePassengers).mock.calls[0][0]).toBe("d1");
+    expect(router.state.location.pathname).toBe(REVIEW_PATH);
+    expect(router.state.location.state).toMatchObject({
+      draftId: "d1",
+      searchId: "s1",
+      passengers: [
+        {
+          type: "adult",
+          title: "Mr",
+          firstName: "Somchai",
+          lastName: "Jaidee",
+        },
+      ],
+    });
+  });
+
+  it("When saving fails, should stay on the page and not navigate", async () => {
+    vi.mocked(api.savePassengers).mockRejectedValue(new Error("down"));
+    const user = userEvent.setup();
+    const router = renderPage();
+    await fillAdult(user);
+    await user.click(screen.getByRole("checkbox", { name: /ข้าพเจ้ายอมรับ/ }));
+    await user.click(screen.getByRole("button", { name: "ไปต่อ" }));
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe(PASSENGERS_PATH);
   });
 
   it("When the server rejects a field, should show it under the field and keep typed values", async () => {

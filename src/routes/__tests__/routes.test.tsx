@@ -62,6 +62,15 @@ describe("app routes", () => {
     router.dispose();
   });
 
+  it("When the path is /booking/review without flow state, should send the guest home", async () => {
+    const router = createMemoryRouter(appRoutes, {
+      initialEntries: ["/booking/review"],
+    });
+    render(<RouterProvider router={router} />);
+    await waitFor(() => expect(router.state.location.pathname).toBe("/"));
+    router.dispose();
+  });
+
   it("UI-FND-06: When the shell renders, should show no language toggle", () => {
     const router = createMemoryRouter(appRoutes, { initialEntries: ["/"] });
     render(<RouterProvider router={router} />);
