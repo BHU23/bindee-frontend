@@ -4,9 +4,11 @@ import { ReturnFlightsPage } from "@/features/fare-selection";
 import { FlightResultsPage } from "@/features/flight-results";
 import { HomePage } from "@/features/home-search";
 import { PassengersPage, PrivacyPage } from "@/features/passenger-info";
+import { PaymentMethodPage } from "@/features/payment-method";
 import { ReviewPage } from "@/features/review-hold";
 import {
   PASSENGERS_PATH,
+  PAYMENT_METHOD_PATH,
   PRIVACY_PATH,
   RESULTS_PATH,
   RETURN_FLIGHTS_PATH,
@@ -24,6 +26,7 @@ export const appRoutes: RouteObject[] = [
       { path: RETURN_FLIGHTS_PATH, element: <ReturnFlightsPage /> },
       { path: PASSENGERS_PATH, element: <PassengersPage /> },
       { path: REVIEW_PATH, element: <ReviewPage /> },
+      { path: PAYMENT_METHOD_PATH, element: <PaymentMethodPage /> },
       { path: PRIVACY_PATH, element: <PrivacyPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
