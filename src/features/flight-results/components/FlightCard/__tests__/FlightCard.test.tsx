@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import userEvent from "@testing-library/user-event";
+import { describe, expect, it, vi } from "vitest";
 import { flightsFixture } from "../../../__fixtures__/flightResults";
 import type { FlightCardDto } from "../../../types/flightResults";
 import { FlightCard } from "../FlightCard";
@@ -59,4 +60,16 @@ describe("FlightCard", () => {
       expect(screen.queryByText(/เหลือ/)).not.toBeInTheDocument();
     },
   );
+
+  it("When onSelect is set and the card is tapped, should report the flight", async () => {
+    const onSelect = vi.fn();
+    render(<FlightCard flight={cheapest} onSelect={onSelect} />);
+    await userEvent.click(screen.getByRole("button", { name: /BD101/ }));
+    expect(onSelect).toHaveBeenCalledWith(cheapest);
+  });
+
+  it("When onSelect is absent, should render no button", () => {
+    render(<FlightCard flight={cheapest} />);
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
+  });
 });

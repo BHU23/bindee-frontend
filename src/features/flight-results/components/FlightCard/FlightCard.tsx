@@ -8,7 +8,7 @@ import type { FlightCardProps } from "./FlightCard.types";
 const SEATS_LEFT_HINT_MAX = 5;
 
 /** One result: times are shown in each airport's own timezone. */
-export function FlightCard({ flight }: FlightCardProps) {
+export function FlightCard({ flight, onSelect }: FlightCardProps) {
   const { t } = useTranslation("flightResults");
   const { hours, minutes } = splitDuration(flight.duration);
   const duration =
@@ -20,7 +20,7 @@ export function FlightCard({ flight }: FlightCardProps) {
   const showSeats =
     flight.seatsLeft !== undefined && flight.seatsLeft <= SEATS_LEFT_HINT_MAX;
 
-  return (
+  const card = (
     <Card className="gap-3 px-4">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <span className="font-display text-sm font-semibold text-midnight">
@@ -62,5 +62,16 @@ export function FlightCard({ flight }: FlightCardProps) {
         )}
       </div>
     </Card>
+  );
+
+  if (!onSelect) return card;
+  return (
+    <button
+      type="button"
+      className="w-full rounded-md text-left focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none"
+      onClick={() => onSelect(flight)}
+    >
+      {card}
+    </button>
   );
 }
