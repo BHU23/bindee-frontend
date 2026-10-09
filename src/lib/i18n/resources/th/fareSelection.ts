@@ -1,0 +1,32 @@
+export const fareSelection = {
+  select: "เลือก",
+  sheet: {
+    title: "เลือกประเภทค่าโดยสาร",
+    description: "{{flightNo}} · {{from}} → {{to}}",
+    fareGroup: "ประเภทค่าโดยสาร",
+    loading: "กำลังโหลดค่าโดยสาร",
+    loadError: "โหลดค่าโดยสารไม่สำเร็จ",
+    selectError: "เลือกค่าโดยสารไม่สำเร็จ กรุณาลองอีกครั้ง",
+    retry: "ลองอีกครั้ง",
+  },
+  fare: {
+    name: { LITE: "Lite", VALUE: "Value", FLEX: "Flex" },
+    price: "{{price}} ต่อท่าน รวมภาษีแล้ว",
+    cabinBag: "สัมภาระถือขึ้นเครื่อง {{kg}} กก.",
+    checkedBag: "สัมภาระโหลดใต้ท้องเครื่อง {{kg}} กก.",
+    noCheckedBag: "ไม่รวมสัมภาระโหลดใต้ท้องเครื่อง",
+    changeFree: "เปลี่ยนเที่ยวบินได้ฟรี",
+    changeFee: "เปลี่ยนเที่ยวบินได้ ค่าธรรมเนียม {{fee}}",
+    changeNotAllowed: "เปลี่ยนเที่ยวบินไม่ได้",
+    refundFree: "คืนเงินได้เต็มจำนวน",
+    refundFee: "คืนเงินได้ ค่าธรรมเนียม {{fee}}",
+    refundNotAllowed: "ไม่สามารถขอคืนเงิน",
+    seatIncluded: "รวมการเลือกที่นั่ง",
+    seatNotIncluded: "ไม่รวมการเลือกที่นั่ง",
+  },
+  draftError: "เริ่มการจองไม่สำเร็จ กรุณาลองอีกครั้ง",
+  footer: {
+    outbound: "ขาไป {{from}} → {{to}}",
+    return: "ขากลับ {{from}} → {{to}}",
+  },
+} as const;

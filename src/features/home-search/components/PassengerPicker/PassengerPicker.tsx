@@ -2,13 +2,13 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Counter } from "@/components/common/Counter";
 import { Icon } from "@/components/common/Icon";
+import { SelectField } from "@/components/common/SelectField";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Select } from "@/components/ui/select";
 import type { PassengerPickerProps } from "./PassengerPicker.types";
 
 /** One field that summarises the party and opens the counters (and cabin) in a popover. */
@@ -83,7 +83,7 @@ export function PassengerPicker({
               {t("pax.limitInfants")}
             </p>
           )}
-          <Select
+          <SelectField
             label={t("field.cabin")}
             options={[{ value: "ECONOMY", label: t("cabin.economy") }]}
             value={values.cabin}
