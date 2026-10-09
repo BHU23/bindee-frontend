@@ -1,1 +1,0 @@
-export { SortControl } from "./SortControl";
