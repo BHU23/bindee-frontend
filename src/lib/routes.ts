@@ -10,3 +10,9 @@ export const PRIVACY_PATH = "/privacy";
 export const REVIEW_PATH = "/booking/review";
 /** Payment method (payment-method); review-hold navigates here after the booking is created. Router state: `PaymentFlowState`. */
 export const PAYMENT_METHOD_PATH = "/booking/payment";
+/** Mock card page (mock-payment); payment-method navigates here with `?paymentId=` and router state `CardFlowState`. */
+export const PAY_CARD_PATH = "/pay/card";
+/** Booking confirmation (ticketing-confirmation, not built yet: shows the not-found page until then). */
+export function confirmationPath(pnr: string): string {
+  return `/bookings/${encodeURIComponent(pnr)}/confirmation`;
+}
