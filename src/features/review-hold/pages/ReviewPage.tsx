@@ -4,6 +4,7 @@ import { Navigate, useLocation, useNavigate } from "react-router";
 import { AppHeader } from "@/components/common/AppHeader";
 import { Steps } from "@/components/common/Steps";
 import { Alert } from "@/components/ui/alert";
+import { useGoBack } from "@/hooks/useGoBack";
 import { formatBaht } from "@/lib/format";
 import {
   PASSENGERS_PATH,
@@ -31,6 +32,7 @@ function Review({ flow }: { flow: ReviewFlowState }) {
   const { t } = useTranslation("reviewHold");
   const navigate = useNavigate();
   const confirm = useConfirmBooking(flow);
+  const goBack = useGoBack(PASSENGERS_PATH, flow);
   const resultsPath = `${RESULTS_PATH}?searchId=${encodeURIComponent(flow.searchId)}`;
   const lines = [
     { label: t("price.outbound"), amount: formatBaht(flow.outbound.total) },
@@ -59,10 +61,7 @@ function Review({ flow }: { flow: ReviewFlowState }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <AppHeader
-        title={t("title")}
-        onBack={() => void navigate(PASSENGERS_PATH, { state: flow })}
-      />
+      <AppHeader title={t("title")} onBack={goBack} />
       <Steps
         steps={STEP_KEYS.map((key) => t(`steps.${key}`))}
         current={CURRENT_STEP}

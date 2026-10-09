@@ -1,12 +1,13 @@
 import type { FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Navigate, useLocation, useNavigate } from "react-router";
+import { Navigate, useLocation } from "react-router";
 import { AppHeader } from "@/components/common/AppHeader";
 import { HoldCountdown } from "@/components/common/HoldCountdown";
 import { Steps } from "@/components/common/Steps";
 import { TestModeBanner } from "@/components/common/TestModeBanner";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { useGoBack } from "@/hooks/useGoBack";
 import { formatBaht } from "@/lib/format";
 import { MethodOptions } from "../components/MethodOptions";
 import { useStartPayment } from "../hooks/useStartPayment";
@@ -27,7 +28,7 @@ export function PaymentMethodPage() {
 
 function PaymentMethodScreen({ flow }: { flow: PaymentFlowState }) {
   const { t } = useTranslation("paymentMethod");
-  const navigate = useNavigate();
+  const goBack = useGoBack("/");
   const payment = useStartPayment(flow);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -37,7 +38,7 @@ function PaymentMethodScreen({ flow }: { flow: PaymentFlowState }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <AppHeader title={t("title")} onBack={() => void navigate(-1)} />
+      <AppHeader title={t("title")} onBack={goBack} />
       <Steps
         steps={STEP_KEYS.map((key) => t(`steps.${key}`))}
         current={CURRENT_STEP}

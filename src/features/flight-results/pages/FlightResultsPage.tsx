@@ -6,6 +6,7 @@ import { Icon } from "@/components/common/Icon";
 import { Steps } from "@/components/common/Steps";
 import { Button } from "@/components/ui/button";
 import { useAsyncResource } from "@/hooks/useAsyncResource";
+import { useGoBack } from "@/hooks/useGoBack";
 import { FareSelectionSheet, useOutboundFlow } from "@/features/fare-selection";
 import { formatBaht, formatDateTh } from "@/lib/format";
 import { getFlights } from "../api/flightResultsApi";
@@ -61,6 +62,7 @@ function FlightResults({ searchId }: { searchId: string }) {
   const { t } = useTranslation("flightResults");
   const { t: tf } = useTranslation("fareSelection");
   const navigate = useNavigate();
+  const goBack = useGoBack("/");
   const [params, setParams] = useSearchParams();
   const filters = useMemo(() => parseFilters(params), [params]);
   const filterKey = filtersToParams(filters).toString();
@@ -87,7 +89,7 @@ function FlightResults({ searchId }: { searchId: string }) {
 
   const header = (
     <>
-      <AppHeader title={t("title")} onBack={() => navigate(-1)} />
+      <AppHeader title={t("title")} onBack={goBack} />
       <Steps
         steps={STEP_KEYS.map((key) => t(`steps.${key}`))}
         current={CURRENT_STEP}

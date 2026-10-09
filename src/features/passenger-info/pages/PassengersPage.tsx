@@ -4,6 +4,7 @@ import { Navigate, useLocation, useNavigate } from "react-router";
 import { AppHeader } from "@/components/common/AppHeader";
 import { Steps } from "@/components/common/Steps";
 import { Alert } from "@/components/ui/alert";
+import { useGoBack } from "@/hooks/useGoBack";
 import { RESULTS_PATH, REVIEW_PATH } from "@/lib/routes";
 import { ConsentSection } from "../components/ConsentSection";
 import { ContactSection } from "../components/ContactSection";
@@ -32,6 +33,9 @@ function Passengers({ flow }: { flow: PassengerFlowState }) {
   const { t } = useTranslation("passengerInfo");
   const navigate = useNavigate();
   const form = usePassengerForm(flow);
+  const goBack = useGoBack(
+    `${RESULTS_PATH}?searchId=${encodeURIComponent(flow.searchId)}`,
+  );
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -52,14 +56,7 @@ function Passengers({ flow }: { flow: PassengerFlowState }) {
 
   return (
     <div className="flex flex-col gap-6">
-      <AppHeader
-        title={t("title")}
-        onBack={() =>
-          void navigate(
-            `${RESULTS_PATH}?searchId=${encodeURIComponent(flow.searchId)}`,
-          )
-        }
-      />
+      <AppHeader title={t("title")} onBack={goBack} />
       <Steps
         steps={STEP_KEYS.map((key) => t(`steps.${key}`))}
         current={CURRENT_STEP}

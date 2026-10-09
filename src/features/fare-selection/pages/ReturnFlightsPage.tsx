@@ -3,6 +3,7 @@ import { Navigate, useLocation, useNavigate } from "react-router";
 import { AppHeader } from "@/components/common/AppHeader";
 import { Steps } from "@/components/common/Steps";
 import { Alert } from "@/components/ui/alert";
+import { useGoBack } from "@/hooks/useGoBack";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { FlightCard } from "@/features/flight-results/components/FlightCard";
@@ -79,6 +80,9 @@ function OutboundSummary({
 function ReturnFlights({ flow }: { flow: FareFlowState }) {
   const { t } = useTranslation("returnFlights");
   const navigate = useNavigate();
+  const goBack = useGoBack(
+    `${RESULTS_PATH}?searchId=${encodeURIComponent(flow.searchId)}`,
+  );
   const leg = useReturnLeg(flow);
   const { data, status, error, reload } =
     useAsyncResource<ReturnFlightsResponse>(
@@ -94,7 +98,7 @@ function ReturnFlights({ flow }: { flow: FareFlowState }) {
 
   const header = (
     <>
-      <AppHeader title={t("title")} onBack={() => navigate(-1)} />
+      <AppHeader title={t("title")} onBack={goBack} />
       <Steps
         steps={STEP_KEYS.map((key) => t(`steps.${key}`))}
         current={CURRENT_STEP}
