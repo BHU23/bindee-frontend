@@ -2,6 +2,7 @@ import { common } from "./common";
 import { fareSelection } from "./fareSelection";
 import { flightResults } from "./flightResults";
 import { homeSearch } from "./homeSearch";
+import { mockPayment } from "./mockPayment";
 import { passengerInfo } from "./passengerInfo";
 import { paymentMethod } from "./paymentMethod";
 import { priceChanged } from "./priceChanged";
@@ -14,6 +15,7 @@ export const th = {
   fareSelection,
   flightResults,
   homeSearch,
+  mockPayment,
   passengerInfo,
   paymentMethod,
   priceChanged,

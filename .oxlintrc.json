@@ -111,6 +111,26 @@
           }
         ]
       }
+    },
+    {
+      "files": ["src/features/mock-payment/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": [
+                  "@/features/**",
+                  "!@/features/mock-payment",
+                  "!@/features/mock-payment/**"
+                ],
+                "message": "No cross-feature imports. Move shared code to components/common, hooks or lib."
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

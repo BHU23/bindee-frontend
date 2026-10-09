@@ -112,6 +112,12 @@ describe("PaymentMethodPage", () => {
     );
     expect(router.state.location.pathname).toBe("/pay/card");
     expect(router.state.location.search).toBe("?paymentId=p1");
+    expect(router.state.location.state).toEqual({
+      pnr: "AB12CD",
+      holdExpiresAt: paymentFlow.holdExpiresAt,
+      amount: 1780,
+      mockRef: "MOCK-1",
+    });
   });
 
   it("UI-PM-02: When the CTA is double-clicked, should create one payment and disable the button while loading", async () => {
