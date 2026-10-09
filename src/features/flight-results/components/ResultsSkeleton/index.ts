@@ -1,1 +1,0 @@
-export { ResultsSkeleton } from "./ResultsSkeleton";
