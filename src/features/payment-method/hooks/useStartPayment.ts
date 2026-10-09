@@ -47,10 +47,21 @@ export function useStartPayment(flow: PaymentFlowState): UseStartPaymentReturn {
         idempotencyKey.current,
       );
       // Stay locked on success: the page is being left.
-      void navigate({
-        pathname: saved.next,
-        search: `?paymentId=${encodeURIComponent(payment.paymentId)}`,
-      });
+      // The method page gets what it shows (amount, reference, hold expiry) as router state.
+      void navigate(
+        {
+          pathname: saved.next,
+          search: `?paymentId=${encodeURIComponent(payment.paymentId)}`,
+        },
+        {
+          state: {
+            pnr: flow.pnr,
+            holdExpiresAt: flow.holdExpiresAt,
+            amount: payment.amount,
+            mockRef: payment.mockRef,
+          },
+        },
+      );
     } catch (error) {
       setSubmitError(errorMessage(error));
       isLocked.current = false;
