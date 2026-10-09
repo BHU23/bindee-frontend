@@ -3,11 +3,13 @@ import { AppShell } from "@/components/layout/AppShell";
 import { ReturnFlightsPage } from "@/features/fare-selection";
 import { FlightResultsPage } from "@/features/flight-results";
 import { HomePage } from "@/features/home-search";
+import { CardPaymentPage } from "@/features/mock-payment";
 import { PassengersPage, PrivacyPage } from "@/features/passenger-info";
 import { PaymentMethodPage } from "@/features/payment-method";
 import { ReviewPage } from "@/features/review-hold";
 import {
   PASSENGERS_PATH,
+  PAY_CARD_PATH,
   PAYMENT_METHOD_PATH,
   PRIVACY_PATH,
   RESULTS_PATH,
@@ -27,6 +29,7 @@ export const appRoutes: RouteObject[] = [
       { path: PASSENGERS_PATH, element: <PassengersPage /> },
       { path: REVIEW_PATH, element: <ReviewPage /> },
       { path: PAYMENT_METHOD_PATH, element: <PaymentMethodPage /> },
+      { path: PAY_CARD_PATH, element: <CardPaymentPage /> },
       { path: PRIVACY_PATH, element: <PrivacyPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],

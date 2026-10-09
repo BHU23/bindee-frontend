@@ -2,6 +2,13 @@ export const mockPayment = {
   title: "ชำระด้วยบัตร",
   banner:
     "การชำระเงินในระบบนี้เป็นการจำลอง ไม่มีการตัดเงินจริง กรุณาใช้บัตรทดสอบด้านล่างเท่านั้น",
+  steps: {
+    flight: "เที่ยวบิน",
+    passengers: "ผู้โดยสาร",
+    extras: "บริการเสริม",
+    review: "ตรวจสอบ",
+    pay: "ชำระเงิน",
+  },
   summary: {
     merchant: "ผู้รับเงิน",
     merchantName: "Bin Dee Airways (mock)",
