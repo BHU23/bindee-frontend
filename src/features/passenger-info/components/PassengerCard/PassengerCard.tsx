@@ -1,8 +1,16 @@
+import { useState } from "react";
+import { addYears, startOfDay, subYears } from "date-fns";
 import { useTranslation } from "react-i18next";
+import { DatePickerField } from "@/components/common/DatePickerField";
+import { SelectField } from "@/components/common/SelectField";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
-import { COUNTRY_CODES, titleOptions } from "../../lib/rules";
+import {
+  COUNTRY_CODES,
+  DOB_YEARS_BACK,
+  PASSPORT_YEARS_AHEAD,
+  titleOptions,
+} from "../../lib/rules";
 import type { PassengerField } from "../../types/passengerInfo";
 import type { PassengerCardProps } from "./PassengerCard.types";
 
@@ -31,6 +39,21 @@ export function PassengerCard({
       onBlur: () => onBlur(field),
     };
   }
+  function bindSelect(field: PassengerField) {
+    return {
+      value: values[field],
+      error: error(field),
+      onValueChange: (value: string) => onChange(field, value),
+      onBlur: () => onBlur(field),
+    };
+  }
+  function bindDate(field: PassengerField) {
+    return {
+      ...bindSelect(field),
+      placeholder: t("fields.datePlaceholder"),
+    };
+  }
+  const [today] = useState(() => startOfDay(new Date()));
   const countryOptions = [
     { value: "", label: t("fields.nationalityPlaceholder") },
     ...COUNTRY_CODES.map((code) => ({
@@ -61,11 +84,11 @@ export function PassengerCard({
             {t(`ageHint.${slot.type}`)}
           </p>
         </div>
-        <Select
+        <SelectField
           label={t("fields.title")}
           options={titles}
           autoComplete="honorific-prefix"
-          {...bind("title")}
+          {...bindSelect("title")}
         />
         {gender && (
           <p className="text-sm text-muted-foreground">
@@ -87,11 +110,17 @@ export function PassengerCard({
           autoComplete="off"
           {...bind("lastName")}
         />
-        <Input type="date" label={t("fields.dob")} {...bind("dob")} />
-        <Select
+        <DatePickerField
+          label={t("fields.dob")}
+          startMonth={subYears(today, DOB_YEARS_BACK)}
+          endMonth={today}
+          disabledDays={{ after: today }}
+          {...bindDate("dob")}
+        />
+        <SelectField
           label={t("fields.nationality")}
           options={countryOptions}
-          {...bind("nationality")}
+          {...bindSelect("nationality")}
         />
         {showPassport && (
           <>
@@ -101,15 +130,17 @@ export function PassengerCard({
               autoComplete="off"
               {...bind("passportNo")}
             />
-            <Select
+            <SelectField
               label={t("fields.passportCountry")}
               options={countryOptions}
-              {...bind("passportCountry")}
+              {...bindSelect("passportCountry")}
             />
-            <Input
-              type="date"
+            <DatePickerField
               label={t("fields.passportExpiry")}
-              {...bind("passportExpiry")}
+              startMonth={today}
+              endMonth={addYears(today, PASSPORT_YEARS_AHEAD)}
+              disabledDays={{ before: today }}
+              {...bindDate("passportExpiry")}
             />
           </>
         )}

@@ -37,6 +37,10 @@ export const COUNTRY_CODES = ["TH", "SG", "JP", "CN", "KR", "MY", "US", "GB"];
 
 export const ADULT_MIN_AGE = 12;
 export const CHILD_MIN_AGE = 2;
+/** How far back the date-of-birth calendar goes. */
+export const DOB_YEARS_BACK = 100;
+/** How far ahead the passport-expiry calendar goes. */
+export const PASSPORT_YEARS_AHEAD = 20;
 
 export interface PassengerSlot {
   type: PassengerType;

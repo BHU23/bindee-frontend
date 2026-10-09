@@ -1,8 +1,64 @@
 import * as React from "react";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-import { DayPicker, getDefaultClassNames } from "react-day-picker";
+import {
+  DayPicker,
+  getDefaultClassNames,
+  type DropdownProps,
+} from "react-day-picker";
 import { cn } from "cn";
 import { buttonVariants } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+/** Month / year dropdown for `captionLayout="dropdown"`: the shadcn Select instead of a native `<select>`. */
+function CalendarDropdown({
+  options,
+  value,
+  onChange,
+  disabled,
+  "aria-label": ariaLabel,
+}: DropdownProps) {
+  const items = (options ?? []).map((option) => ({
+    value: String(option.value),
+    label: option.label,
+  }));
+  return (
+    <Select
+      items={items}
+      value={String(value)}
+      disabled={disabled}
+      onValueChange={(next) => {
+        if (next === null) return;
+        onChange?.({
+          target: { value: next },
+        } as React.ChangeEvent<HTMLSelectElement>);
+      }}
+    >
+      <SelectTrigger
+        aria-label={ariaLabel}
+        className="h-9 w-auto gap-1 px-3 text-sm font-semibold text-midnight"
+      >
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent className="min-w-28">
+        {(options ?? []).map((option) => (
+          <SelectItem
+            key={option.value}
+            value={String(option.value)}
+            disabled={option.disabled}
+          >
+            {option.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}
 
 /** Month grid with 44 px day cells; the selected day is a midnight pill, today an iris ring. */
 function Calendar({
@@ -21,22 +77,26 @@ function Calendar({
         months: cn("relative flex flex-col gap-4", defaults.months),
         month: cn("flex w-full flex-col gap-3", defaults.month),
         nav: cn(
-          "absolute inset-x-0 top-0 flex w-full items-center justify-between",
+          "pointer-events-none absolute inset-x-0 top-0 flex w-full items-center justify-between",
           defaults.nav,
         ),
         button_previous: cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
-          "size-(--cell-size) select-none aria-disabled:opacity-40",
+          "pointer-events-auto size-(--cell-size) select-none aria-disabled:opacity-40",
           defaults.button_previous,
         ),
         button_next: cn(
           buttonVariants({ variant: "ghost", size: "icon" }),
-          "size-(--cell-size) select-none aria-disabled:opacity-40",
+          "pointer-events-auto size-(--cell-size) select-none aria-disabled:opacity-40",
           defaults.button_next,
         ),
         month_caption: cn(
           "flex h-(--cell-size) w-full items-center justify-center px-(--cell-size) font-display text-base font-semibold text-midnight",
           defaults.month_caption,
+        ),
+        dropdowns: cn(
+          "flex items-center justify-center gap-2",
+          defaults.dropdowns,
         ),
         caption_label: cn("select-none", defaults.caption_label),
         month_grid: cn("w-full border-collapse", defaults.month_grid),
@@ -67,6 +127,7 @@ function Calendar({
         ...classNames,
       }}
       components={{
+        Dropdown: CalendarDropdown,
         Chevron: ({ orientation, className: iconClass }) =>
           orientation === "left" ? (
             <ChevronLeftIcon className={cn("size-5", iconClass)} />

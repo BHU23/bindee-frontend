@@ -21,7 +21,9 @@ describe("ContactSection", () => {
         onBlur={onBlur}
       />,
     );
-    expect(screen.getByLabelText("รหัสประเทศ")).toHaveValue("+66");
+    expect(
+      screen.getByRole("combobox", { name: "รหัสประเทศ" }),
+    ).toHaveTextContent("+66");
   });
 
   it("UI-PX-06: When the email is invalid, should show the message under it", () => {
@@ -63,7 +65,8 @@ describe("ContactSection", () => {
     await user.tab();
     await user.type(screen.getByLabelText("เบอร์โทรศัพท์"), "1");
     await user.tab();
-    await user.selectOptions(screen.getByLabelText("รหัสประเทศ"), "+65");
+    await user.click(screen.getByRole("combobox", { name: "รหัสประเทศ" }));
+    await user.click(await screen.findByRole("option", { name: "+65" }));
     expect(onChange).toHaveBeenCalledWith("name", "A");
     expect(onChange).toHaveBeenCalledWith("email", "b");
     expect(onChange).toHaveBeenCalledWith("phoneNumber", "1");

@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -12,6 +12,9 @@ import {
 } from "../../__fixtures__/passengerInfo";
 import * as api from "../../api/passengerApi";
 import { PassengersPage } from "../PassengersPage";
+
+// Picking a date opens a year list of ~100 options; in jsdom that is slow, most of all under coverage.
+vi.setConfig({ testTimeout: 30_000 });
 
 vi.mock("../../api/passengerApi");
 
@@ -29,12 +32,44 @@ function renderPage(state: unknown = singleAdultFlow) {
   return router;
 }
 
+type User = ReturnType<typeof userEvent.setup>;
+
+async function pickOption(user: User, field: string, option: string) {
+  await user.click(screen.getByRole("combobox", { name: field }));
+  await user.click(await screen.findByRole("option", { name: option }));
+}
+
+async function pickDate(
+  user: User,
+  field: string,
+  { year, month, day }: { year: string; month: string; day: string },
+) {
+  await user.click(screen.getByRole("button", { name: new RegExp(field) }));
+  const dialog = await screen.findByRole("dialog");
+  const [monthSelect, yearSelect] = within(dialog).getAllByRole("combobox");
+  await user.click(yearSelect);
+  await user.click(await screen.findByRole("option", { name: year }));
+  await user.click(monthSelect);
+  await user.click(await screen.findByRole("option", { name: month }));
+  const grid = await screen.findByRole("grid");
+  await user.click(
+    within(grid).getByRole("button", {
+      name: new RegExp(`ที่ ${day} ${month} ${year}`),
+    }),
+  );
+}
+
 async function fillAdult(user: ReturnType<typeof userEvent.setup>) {
-  await user.selectOptions(await screen.findByLabelText("คำนำหน้า"), "Mr");
+  await screen.findByRole("combobox", { name: "คำนำหน้า" });
+  await pickOption(user, "คำนำหน้า", "Mr");
   await user.type(screen.getByLabelText("ชื่อ (ภาษาอังกฤษ)"), "Somchai");
   await user.type(screen.getByLabelText("นามสกุล (ภาษาอังกฤษ)"), "Jaidee");
-  await user.type(screen.getByLabelText("วันเกิด"), "1990-05-01");
-  await user.selectOptions(screen.getByLabelText("สัญชาติ"), "TH");
+  await pickDate(user, "วันเกิด", {
+    year: "1990",
+    month: "พฤษภาคม",
+    day: "1",
+  });
+  await pickOption(user, "สัญชาติ", "ไทย");
   await user.type(screen.getByLabelText("ชื่อผู้ติดต่อ"), "Somchai Jaidee");
   await user.type(screen.getByLabelText("อีเมล"), "som@example.com");
   await user.type(screen.getByLabelText("เบอร์โทรศัพท์"), "0812345678");
@@ -101,7 +136,7 @@ describe("PassengersPage", () => {
 
   it("UI-PX-04: When the flow carries no international flag, should hide the passport fields", async () => {
     renderPage();
-    await screen.findByLabelText("คำนำหน้า");
+    await screen.findByRole("combobox", { name: "คำนำหน้า" });
     expect(screen.queryByLabelText("เลขที่พาสปอร์ต")).not.toBeInTheDocument();
   });
 
@@ -139,7 +174,9 @@ describe("PassengersPage", () => {
   it("UI-PX-06: When the email format is wrong and loses focus, should show the email message; phone shows +66", async () => {
     const user = userEvent.setup();
     renderPage();
-    expect(await screen.findByLabelText("รหัสประเทศ")).toHaveValue("+66");
+    expect(
+      await screen.findByRole("combobox", { name: "รหัสประเทศ" }),
+    ).toHaveTextContent("+66");
     await user.type(screen.getByLabelText("อีเมล"), "abc");
     await user.tab();
     expect(

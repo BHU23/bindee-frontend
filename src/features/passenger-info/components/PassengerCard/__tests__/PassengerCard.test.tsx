@@ -1,7 +1,7 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useState } from "react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type {
   FormErrors,
   PassengerFormValues,
@@ -80,22 +80,25 @@ describe("PassengerCard", () => {
     expect(onBlur).toHaveBeenCalledWith("firstName");
   });
 
-  it("UI-PX-09: When the title Select opens for an adult, should list Mr, Mrs, Ms, Miss only", () => {
+  it("UI-PX-09: When the title Select opens for an adult, should list Mr, Mrs, Ms, Miss only", async () => {
+    const user = userEvent.setup();
     renderCard();
-    const select = screen.getByLabelText("คำนำหน้า");
-    const options = within(select)
-      .getAllByRole("option")
-      .map((o) => o.textContent);
+    await user.click(screen.getByRole("combobox", { name: "คำนำหน้า" }));
+    const options = (await screen.findAllByRole("option")).map(
+      (o) => o.textContent,
+    );
     expect(options).toEqual(["เลือกคำนำหน้า", "Mr", "Mrs", "Ms", "Miss"]);
   });
 
   it.each(["child", "infant"] as const)(
     "UI-PX-09: When the passenger is a %s, should list Mstr and Miss only",
-    (type) => {
+    async (type) => {
+      const user = userEvent.setup();
       renderCard({ slot: { type, number: 1 } });
-      const options = within(screen.getByLabelText("คำนำหน้า"))
-        .getAllByRole("option")
-        .map((o) => o.textContent);
+      await user.click(screen.getByRole("combobox", { name: "คำนำหน้า" }));
+      const options = (await screen.findAllByRole("option")).map(
+        (o) => o.textContent,
+      );
       expect(options).toEqual(["เลือกคำนำหน้า", "Mstr", "Miss"]);
     },
   );
@@ -120,8 +123,78 @@ describe("PassengerCard", () => {
     }
     render(<Harness />);
     expect(screen.queryByText(/เพศ/)).not.toBeInTheDocument();
-    await user.selectOptions(screen.getByLabelText("คำนำหน้า"), "Mrs");
+    await user.click(screen.getByRole("combobox", { name: "คำนำหน้า" }));
+    await user.click(await screen.findByRole("option", { name: "Mrs" }));
     expect(screen.getByText("เพศ: หญิง")).toBeInTheDocument();
+  });
+
+  it("UI-PX-02: When the date of birth has an error, should show it under the field with aria-invalid", () => {
+    renderCard({
+      errors: { "passengers.0.dob": "วันเกิดไม่ถูกต้อง" },
+    });
+    const trigger = screen.getByRole("button", { name: /วันเกิด/ });
+    expect(trigger).toHaveAttribute("aria-invalid", "true");
+    expect(trigger).toHaveAccessibleDescription("วันเกิดไม่ถูกต้อง");
+  });
+
+  it("When the date of birth is empty, should show the วว/ดด/ปปปป placeholder instead of a native date input", () => {
+    renderCard();
+    expect(screen.getByRole("button", { name: /วันเกิด/ })).toHaveTextContent(
+      "วว/ดด/ปปปป",
+    );
+    expect(document.querySelector('input[type="date"]')).toBeNull();
+  });
+
+  it("When a date of birth is picked, should send it as YYYY-MM-DD", async () => {
+    const user = userEvent.setup();
+    renderCard({ values: { ...empty, dob: "1990-05-01" } });
+    expect(screen.getByRole("button", { name: /วันเกิด/ })).toHaveTextContent(
+      "01/05/1990",
+    );
+    await user.click(screen.getByRole("button", { name: /วันเกิด/ }));
+    const grid = await screen.findByRole("grid");
+    await user.click(
+      within(grid).getByRole("button", { name: /ที่ 15 พฤษภาคม 1990/ }),
+    );
+    expect(onChange).toHaveBeenCalledWith("dob", "1990-05-15");
+    expect(onBlur).toHaveBeenCalledWith("dob");
+  });
+
+  describe("when picking dates around 15 Oct 2026", () => {
+    beforeEach(() => {
+      vi.useFakeTimers({ toFake: ["Date"], now: new Date(2026, 9, 15) });
+    });
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("When the date of birth calendar is open, should not allow future days", async () => {
+      const user = userEvent.setup();
+      renderCard();
+      await user.click(screen.getByRole("button", { name: /วันเกิด/ }));
+      const grid = await screen.findByRole("grid");
+      expect(
+        within(grid).getByRole("button", { name: /ที่ 15 ตุลาคม 2026/ }),
+      ).toBeEnabled();
+      expect(
+        within(grid).getByRole("button", { name: /ที่ 16 ตุลาคม 2026/ }),
+      ).toBeDisabled();
+    });
+
+    it("UI-PX-04: When international, should offer only today and later for the passport expiry", async () => {
+      const user = userEvent.setup();
+      renderCard({ showPassport: true });
+      await user.click(
+        screen.getByRole("button", { name: /วันหมดอายุพาสปอร์ต/ }),
+      );
+      const grid = await screen.findByRole("grid");
+      expect(
+        within(grid).getByRole("button", { name: /ที่ 14 ตุลาคม 2026/ }),
+      ).toBeDisabled();
+      expect(
+        within(grid).getByRole("button", { name: /ที่ 15 ตุลาคม 2026/ }),
+      ).toBeEnabled();
+    });
   });
 
   it("UI-PX-04: When the trip is domestic, should hide the passport fields", () => {

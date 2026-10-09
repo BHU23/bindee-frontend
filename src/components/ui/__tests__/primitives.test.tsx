@@ -14,7 +14,13 @@ import {
   DialogTitle,
 } from "../dialog";
 import { Input } from "../input";
-import { Select } from "../select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../select";
 import { Sheet, SheetContent, SheetTitle } from "../sheet";
 import { Tabs } from "../tabs";
 
@@ -142,35 +148,43 @@ describe("UI-FND-02 shadcn primitives follow design.md", () => {
   });
 
   describe("Select", () => {
-    it("When options are strings or objects, should render a labelled native select", async () => {
+    const items = [
+      { value: "mr", label: "Mr" },
+      { value: "ms", label: "Ms" },
+    ];
+    function renderSelect() {
+      const onValueChange = vi.fn();
       render(
-        <Select
-          label="คำนำหน้า"
-          options={["นาย", { value: "ms", label: "นางสาว" }]}
-          hint="เลือกหนึ่งข้อ"
-        />,
+        <Select items={items} onValueChange={onValueChange}>
+          <SelectTrigger aria-label="คำนำหน้า">
+            <SelectValue placeholder="เลือก" />
+          </SelectTrigger>
+          <SelectContent>
+            {items.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>,
       );
-      const select = screen.getByLabelText("คำนำหน้า");
-      expect(select.tagName).toBe("SELECT");
-      expect(select).toHaveClass("h-11", "rounded-sm");
-      await userEvent.selectOptions(select, "ms");
-      expect(select).toHaveValue("ms");
-      expect(select).toHaveAccessibleDescription("เลือกหนึ่งข้อ");
+      return onValueChange;
+    }
+
+    it("When rendered, should be a 44px field-styled combobox trigger, not a native select", () => {
+      renderSelect();
+      const trigger = screen.getByRole("combobox", { name: "คำนำหน้า" });
+      expect(trigger.tagName).not.toBe("SELECT");
+      expect(trigger).toHaveClass("h-11", "rounded-sm", "bg-card");
     });
 
-    it("When given an error, should mark it invalid", () => {
-      render(<Select label="ประเทศ" options={["ไทย"]} error="กรุณาเลือก" />);
-      expect(screen.getByLabelText("ประเทศ")).toHaveAttribute(
-        "aria-invalid",
-        "true",
-      );
-    });
-
-    it("When there is no label or help, should still render the select", () => {
-      render(<Select options={["ไทย"]} aria-label="ประเทศ" />);
-      expect(
-        screen.getByRole("combobox", { name: "ประเทศ" }),
-      ).toBeInTheDocument();
+    it("When opened and an option is picked, should report its value and show its label", async () => {
+      const onValueChange = renderSelect();
+      const user = userEvent.setup();
+      await user.click(screen.getByRole("combobox", { name: "คำนำหน้า" }));
+      await user.click(await screen.findByRole("option", { name: "Ms" }));
+      expect(onValueChange).toHaveBeenCalledWith("ms", expect.anything());
+      expect(screen.getByRole("combobox")).toHaveTextContent("Ms");
     });
   });
 

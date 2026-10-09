@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
+import { SelectField } from "@/components/common/SelectField";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { PHONE_CODES } from "../../lib/rules";
 import type { ContactSectionProps } from "./ContactSection.types";
 
@@ -43,11 +43,11 @@ export function ContactSection({
           onBlur={() => onBlur("email")}
         />
         <div className="grid grid-cols-[7rem_1fr] items-start gap-3">
-          <Select
+          <SelectField
             label={t("contact.phoneCode")}
             options={[...PHONE_CODES]}
             value={contact.phoneCode}
-            onChange={(event) => onChange("phoneCode", event.target.value)}
+            onValueChange={(code) => onChange("phoneCode", code)}
           />
           <Input
             type="tel"

@@ -26,6 +26,7 @@ export const passengerInfo = {
     firstName: "ชื่อ (ภาษาอังกฤษ)",
     middleName: "ชื่อกลาง (ไม่บังคับ)",
     lastName: "นามสกุล (ภาษาอังกฤษ)",
+    datePlaceholder: "วว/ดด/ปปปป",
     dob: "วันเกิด",
     nationality: "สัญชาติ",
     nationalityPlaceholder: "เลือกสัญชาติ",
